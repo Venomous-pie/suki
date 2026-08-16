@@ -95,31 +95,33 @@ export default function BatchDetailScreen() {
       {/* Individual Orders */}
       <Text style={[styles.sectionHeading, { color: colors.text }]}>Individual Orders ({BATCH_DETAILS.orders.length})</Text>
 
-      {BATCH_DETAILS.orders.map((order) => (
-        <View key={order.id} style={[styles.orderCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={styles.orderHeader}>
-            <View style={styles.storeInfo}>
-              <Store size={18} color={colors.icon} />
-              <Text style={[styles.storeName, { color: colors.text }]}>{order.store}</Text>
+      <View style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}>
+        {BATCH_DETAILS.orders.map((order) => (
+          <View key={order.id} style={[styles.orderCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.orderHeader}>
+              <View style={styles.storeInfo}>
+                <Store size={18} color={colors.icon} />
+                <Text style={[styles.storeName, { color: colors.text }]}>{order.store}</Text>
+              </View>
+              <Text style={[styles.orderTotal, { color: colors.text }]}>{order.total}</Text>
             </View>
-            <Text style={[styles.orderTotal, { color: colors.text }]}>{order.total}</Text>
-          </View>
 
-          <View style={styles.orderDetails}>
-            <Text style={[styles.orderItemsText, { color: colors.icon }]}>{order.items} items</Text>
-            <Text style={[styles.orderPaymentText, { color: colors.icon }]}>{order.payment}</Text>
-          </View>
+            <View style={styles.orderDetails}>
+              <Text style={[styles.orderItemsText, { color: colors.icon }]}>{order.items} items</Text>
+              <Text style={[styles.orderPaymentText, { color: colors.icon }]}>{order.payment}</Text>
+            </View>
 
-          <View style={[styles.orderActions, { borderTopColor: colors.border }]}>
-            <TouchableOpacity style={[styles.secondaryActionBtn, { borderColor: colors.border }]}>
-              <Text style={[styles.secondaryActionText, { color: colors.text }]}>View Details</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.iconActionBtn, { backgroundColor: '#DEF7EC' }]}>
-              <CheckCircle size={20} color="#046C4E" />
-            </TouchableOpacity>
+            <View style={[styles.orderActions, { borderTopColor: colors.border }]}>
+              <TouchableOpacity style={[styles.secondaryActionBtn, { borderColor: colors.border }]}>
+                <Text style={[styles.secondaryActionText, { color: colors.text }]}>View Details</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconActionBtn, { backgroundColor: '#DEF7EC' }]}>
+                <CheckCircle size={20} color="#046C4E" />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
       <View style={{ height: 24 }} />
     </ScrollView>
   );
@@ -145,10 +147,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   section: {
-    margin: 16,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     overflow: 'hidden',
+    marginBottom: 24,
   },
   sectionHeader: {
     padding: 16,
@@ -213,10 +215,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   orderCard: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     padding: 16,
   },
   orderHeader: {

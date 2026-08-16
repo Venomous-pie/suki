@@ -33,8 +33,8 @@ export default function SettingsScreen() {
         }} 
       />
 
+      <Text style={[styles.sectionTitle, { color: colors.icon }]}>Business Profile</Text>
       <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Business Profile</Text>
         
         <TouchableOpacity style={styles.menuItem}>
           <View style={styles.menuLeft}>
@@ -52,7 +52,7 @@ export default function SettingsScreen() {
           <ChevronRight size={20} color={colors.icon} />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]}>
           <View style={styles.menuLeft}>
             <Phone size={20} color={colors.icon} />
             <Text style={[styles.menuText, { color: colors.text }]}>Contact & Support Info</Text>
@@ -61,8 +61,8 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
+      <Text style={[styles.sectionTitle, { color: colors.icon }]}>Order Configuration</Text>
       <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Order Configuration</Text>
         
         <View style={styles.configItem}>
           <Text style={[styles.configLabel, { color: colors.text }]}>Minimum Order Value (₱)</Text>
@@ -90,7 +90,7 @@ export default function SettingsScreen() {
           />
         </View>
 
-        <View style={[styles.switchRow, { borderBottomWidth: 0, paddingBottom: 0 }]}>
+        <View style={[styles.switchRow, { borderBottomWidth: 0 }]}>
           <View style={styles.switchLeft}>
             <CreditCard size={20} color={colors.icon} />
             <View style={{ marginLeft: 12 }}>
@@ -125,25 +125,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    paddingVertical: 24,
   },
   section: {
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 16,
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    marginBottom: 8,
+    paddingHorizontal: 16,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
+    paddingVertical: 14,
+    paddingRight: 16,
+    marginLeft: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E5E7EB',
   },
   menuLeft: {
@@ -153,12 +156,13 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 16,
     marginLeft: 12,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   configItem: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
+    paddingVertical: 16,
+    paddingRight: 16,
+    marginLeft: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E5E7EB',
   },
   configLabel: {
@@ -178,7 +182,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 12,
-    borderBottomWidth: 1,
+    paddingRight: 16,
+    marginLeft: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E5E7EB',
   },
   switchLeft: {
@@ -187,10 +193,11 @@ const styles = StyleSheet.create({
   },
   switchTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   switchSub: {
-    fontSize: 12,
+    fontSize: 13,
+    marginTop: 2,
   },
   logoutButton: {
     flexDirection: 'row',
@@ -199,6 +206,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
+    marginHorizontal: 16,
+    marginTop: 16,
   },
   logoutText: {
     color: '#EF4444',

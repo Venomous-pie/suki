@@ -18,27 +18,31 @@ export default function RoleSelectionScreen() {
 
         <View style={styles.cardsContainer}>
           <TouchableOpacity 
-            style={[styles.card, { borderColor: colors.border, backgroundColor: colors.surface }]}
+            style={[styles.card, { borderBottomWidth: StyleSheet.hairlineWidth }]}
             onPress={() => router.push('/auth/supplier-join')}
             activeOpacity={0.7}
           >
             <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>
               <Truck size={24} color={colors.primary} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>Supplier</Text>
-            <Text style={[styles.cardDesc, { color: colors.icon }]}>Manage distribution and supply chain</Text>
+            <View style={styles.textContainer}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>Supplier</Text>
+              <Text style={[styles.cardDesc, { color: colors.icon }]}>Manage distribution and supply chain</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.card, { borderColor: colors.border, backgroundColor: colors.surface }]}
+            style={[styles.card, { borderBottomWidth: StyleSheet.hairlineWidth }]}
             onPress={() => router.push('/auth/store-owner-login')}
             activeOpacity={0.7}
           >
             <View style={[styles.iconContainer, { backgroundColor: colors.secondary + '15' }]}>
               <Store size={24} color={colors.secondary} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>Store Owner</Text>
-            <Text style={[styles.cardDesc, { color: colors.icon }]}>Manage your store and orders</Text>
+            <View style={styles.textContainer}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>Store Owner</Text>
+              <Text style={[styles.cardDesc, { color: colors.icon }]}>Manage your store and orders</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -52,35 +56,33 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 48,
   },
   title: {
     fontSize: 32,
     fontWeight: '700',
     letterSpacing: 1,
     marginBottom: 8,
+    paddingHorizontal: 24,
   },
   subtitle: {
     fontSize: 15,
     marginBottom: 40,
     opacity: 0.7,
+    paddingHorizontal: 24,
   },
   cardsContainer: {
     width: '100%',
-    gap: 16,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: '#E5E7EB',
   },
   card: {
     padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#E5E7EB',
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: '#fff',
   },
   iconContainer: {
     width: 48,
@@ -88,7 +90,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginRight: 16,
+  },
+  textContainer: {
+    flex: 1,
   },
   cardTitle: {
     fontSize: 18,
@@ -98,6 +103,5 @@ const styles = StyleSheet.create({
   cardDesc: {
     fontSize: 13,
     lineHeight: 20,
-    textAlign: 'center',
   },
 });

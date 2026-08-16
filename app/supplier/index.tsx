@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    paddingVertical: 16,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -137,17 +137,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 16,
     marginTop: 8,
+    paddingHorizontal: 16,
   },
   card: {
-    borderRadius: 12,
-    borderWidth: 1,
     padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    marginBottom: 8,
   },
   cardHeader: {
     flexDirection: 'row',

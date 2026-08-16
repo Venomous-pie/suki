@@ -34,20 +34,15 @@ export default function StoreOwnerDashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    paddingVertical: 24,
     justifyContent: 'center',
   },
   card: {
     padding: 32,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     marginBottom: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
   icon: {
     marginBottom: 16,
@@ -68,6 +63,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
+    marginHorizontal: 24,
   },
   logoutText: {
     color: '#EF4444',
