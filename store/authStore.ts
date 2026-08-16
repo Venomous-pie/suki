@@ -12,7 +12,7 @@ interface AuthState {
 }
 
 // Ensure you run `npm run tunnel` in the backend folder!
-const API_URL = 'https://suki-auth-api.loca.lt/api/auth';
+const API_URL = 'https://suki-auth-api.onrender.com/api/auth';
 
 export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
