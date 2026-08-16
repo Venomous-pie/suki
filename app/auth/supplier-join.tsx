@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import { ArrowLeft, Link as LinkIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
@@ -11,6 +11,13 @@ export default function SupplierJoinScreen() {
   const loginSupplier = useAuthStore((state) => state.loginSupplier);
   const theme = useColorScheme() ?? 'light';
   const colors = Colors[theme];
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleJoin = async () => {
+    setIsLoading(true);
+    await loginSupplier();
+    setIsLoading(false);
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -31,11 +38,16 @@ export default function SupplierJoinScreen() {
         </Text>
 
         <TouchableOpacity 
-          style={[styles.primaryButton, { backgroundColor: colors.primary }]}
-          onPress={loginSupplier}
+          style={[styles.primaryButton, { backgroundColor: colors.primary }, isLoading && { opacity: 0.8 }]}
+          onPress={handleJoin}
           activeOpacity={0.8}
+          disabled={isLoading}
         >
-          <Text style={styles.primaryButtonText}>Join as Supplier</Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Join as Supplier</Text>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, ActivityIndicator } from 'react-native';
 import { ArrowLeft, Phone } from 'lucide-react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -17,14 +17,22 @@ export default function StoreOwnerLoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!otpSent) {
       setOtpSent(true);
     } else {
-      // Fake OTP verification
-      loginStoreOwner();
+      setIsLoading(true);
+      await loginStoreOwner();
+      setIsLoading(false);
     }
+  };
+
+  const handleSocialLogin = async () => {
+    setIsLoading(true);
+    await loginStoreOwner();
+    setIsLoading(false);
   };
 
   return (
@@ -72,13 +80,18 @@ export default function StoreOwnerLoginScreen() {
         )}
 
         <TouchableOpacity 
-          style={[styles.primaryButton, { backgroundColor: colors.secondary }]}
+          style={[styles.primaryButton, { backgroundColor: colors.secondary }, isLoading && { opacity: 0.8 }]}
           onPress={handleContinue}
           activeOpacity={0.8}
+          disabled={isLoading}
         >
-          <Text style={styles.primaryButtonText}>
-            {otpSent ? 'Verify OTP' : 'Continue'}
-          </Text>
+          {isLoading && otpSent ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>
+              {otpSent ? 'Verify OTP' : 'Continue'}
+            </Text>
+          )}
         </TouchableOpacity>
 
         {!otpSent && (
@@ -90,16 +103,18 @@ export default function StoreOwnerLoginScreen() {
             </View>
 
             <TouchableOpacity 
-              style={[styles.socialButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-              onPress={loginStoreOwner}
+              style={[styles.socialButton, { borderColor: colors.border, backgroundColor: colors.surface }, isLoading && { opacity: 0.8 }]}
+              onPress={handleSocialLogin}
+              disabled={isLoading}
             >
               <GoogleIcon size={20} />
               <Text style={[styles.socialButtonText, { color: colors.text }]}>Continue with Google</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.socialButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-              onPress={loginStoreOwner}
+              style={[styles.socialButton, { borderColor: colors.border, backgroundColor: colors.surface }, isLoading && { opacity: 0.8 }]}
+              onPress={handleSocialLogin}
+              disabled={isLoading}
             >
               <FontAwesome5 name="facebook" size={20} color="#1877F2" />
               <Text style={[styles.socialButtonText, { color: colors.text }]}>Continue with Facebook</Text>

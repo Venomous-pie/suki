@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 
 const tintColorLight = '#0A192F'; // Deep Navy
-const tintColorDark = '#D4AF37'; // Gold
 
 export const Colors = {
   light: {
@@ -16,19 +15,6 @@ export const Colors = {
     accent: '#D4AF37', // Gold
     surface: '#FFFFFF',
     border: '#E5E7EB',
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#0F172A',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#64748B',
-    tabIconSelected: tintColorDark,
-    primary: '#D4AF37',
-    secondary: '#4ADE80',
-    accent: '#0A192F',
-    surface: '#1E293B',
-    border: '#334155',
   },
 };
 

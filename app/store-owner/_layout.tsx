@@ -15,7 +15,7 @@ export default function StoreOwnerLayout() {
         headerTitleAlign: 'center',
         headerShadowVisible: false,
         statusBarStyle: 'light',
-        statusBarHidden: true
+        statusBarHidden: false
       }}
     >
       <Stack.Screen name="index" options={{ title: 'Store Owner Dashboard' }} />
