@@ -42,9 +42,9 @@ export default function ProductsScreen() {
           </View>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16 }}>
-            <Upload size={20} color="#fff" style={{ marginRight: 8 }} />
-            <Text style={{ color: '#fff', fontWeight: '600' }}>CSV</Text>
+          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, backgroundColor: colors.background, padding: 8, borderRadius: 8 }}>
+            <Upload size={20} color={colors.primary} style={{ marginRight: 8 }} />
+            <Text style={{ color: colors.primary, fontWeight: '600' }}>IMPORT</Text>
           </TouchableOpacity>
         )
       });

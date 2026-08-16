@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Switch, RefreshControl, Alert } from 'react-native';
 import { useLocalSearchParams, Stack, router, useNavigation, useFocusEffect } from 'expo-router';
-import { Image as ImageIcon, Save, Trash2 } from 'lucide-react-native';
+import { Image as ImageIcon, MoveLeft, Save, Trash2 } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -39,7 +39,7 @@ export default function ProductDetailScreen() {
         headerTitle: PRODUCT_DETAILS.name,
         headerLeft: () => (
           <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 16 }}>
-            <Text style={{ color: '#fff', fontSize: 16 }}>← Back</Text>
+            <MoveLeft color={colors.background} size={24} />
           </TouchableOpacity>
         ),
         headerRight: () => null

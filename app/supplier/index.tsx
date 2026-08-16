@@ -61,7 +61,7 @@ export default function SupplierDashboardScreen() {
         
         <TouchableOpacity 
           style={[styles.primaryButton, { backgroundColor: colors.primary }]}
-          onPress={() => router.push('/supplier/batches/24')}
+          onPress={() => router.push('/supplier/batches')}
         >
           <Text style={styles.primaryButtonText}>View Batch</Text>
           <ArrowRight size={18} color="#fff" style={{ marginLeft: 8 }} />
