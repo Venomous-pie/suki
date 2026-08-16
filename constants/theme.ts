@@ -1,41 +1,42 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = '#0A192F'; // Deep Navy
+const tintColorDark = '#D4AF37'; // Gold
 
 export const Colors = {
   light: {
     text: '#11181C',
-    background: '#fff',
+    background: '#FAFAFA',
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: '#4B5563',
+    tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
+    primary: '#0A192F',
+    secondary: '#1E4620', // Forest Green
+    accent: '#D4AF37', // Gold
+    surface: '#FFFFFF',
+    border: '#E5E7EB',
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
+    background: '#0F172A',
     tint: tintColorDark,
     icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    tabIconDefault: '#64748B',
     tabIconSelected: tintColorDark,
+    primary: '#D4AF37',
+    secondary: '#4ADE80',
+    accent: '#0A192F',
+    surface: '#1E293B',
+    border: '#334155',
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {

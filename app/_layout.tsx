@@ -1,24 +1,39 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Redirect, Slot, useSegments } from 'expo-router';
+import { useAuthStore } from '@/store/authStore';
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
+      <AuthGate />
       <StatusBar style="auto" />
     </ThemeProvider>
   );
+}
+
+function AuthGate() {
+  const { isAuthenticated, role } = useAuthStore();
+  const segments = useSegments();
+
+  const inAuthGroup = segments[0] === 'auth';
+
+  if (!isAuthenticated && !inAuthGroup) {
+    return <Redirect href="/auth" />;
+  }
+
+  if (isAuthenticated) {
+    if (role === 'supplier' && segments[0] !== 'supplier') {
+      return <Redirect href="/supplier" />;
+    }
+    if (role === 'store_owner' && segments[0] !== 'store-owner') {
+      return <Redirect href="/store-owner" />;
+    }
+  }
+
+  return <Slot />;
 }
