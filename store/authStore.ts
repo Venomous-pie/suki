@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const REMEMBER_ME_KEY = 'suki_remember_me';
 
 type Role = 'supplier' | 'store_owner' | null;
 
@@ -18,6 +21,11 @@ interface AuthState {
   requestStoreOwnerOtp: (phone: string) => Promise<string | null>;
   loginStoreOwner: (phone: string, otp: string) => Promise<void>;
   logout: () => void;
+  // Remember Me
+  savedPhone: string | null;
+  loadSavedPhone: () => Promise<void>;
+  savePhone: (phone: string) => Promise<void>;
+  clearSavedPhone: () => Promise<void>;
 }
 
 // Ensure you run `npm run tunnel` in the backend folder!
@@ -28,6 +36,28 @@ export const useAuthStore = create<AuthState>((set) => ({
   role: null,
   token: null,
   user: null,
+  savedPhone: null,
+
+  loadSavedPhone: async () => {
+    try {
+      const phone = await AsyncStorage.getItem(REMEMBER_ME_KEY);
+      set({ savedPhone: phone });
+    } catch { /* ignore */ }
+  },
+
+  savePhone: async (phone: string) => {
+    try {
+      await AsyncStorage.setItem(REMEMBER_ME_KEY, phone);
+      set({ savedPhone: phone });
+    } catch { /* ignore */ }
+  },
+
+  clearSavedPhone: async () => {
+    try {
+      await AsyncStorage.removeItem(REMEMBER_ME_KEY);
+      set({ savedPhone: null });
+    } catch { /* ignore */ }
+  },
 
   loginSupplier: async (name: string, phone: string) => {
     try {

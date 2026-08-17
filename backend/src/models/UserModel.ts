@@ -20,6 +20,15 @@ const initDB = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    
+    // Add fcm_token column if it doesn't exist (for existing DBs)
+    try {
+      await pool.query(`ALTER TABLE users ADD COLUMN fcm_token VARCHAR(255)`);
+      console.log('Added fcm_token column to users table.');
+    } catch (e: any) {
+      // Ignore error if column already exists (code 42701 in Postgres)
+    }
+    
     console.log('Database tables verified.');
   } catch (err) {
     console.error('Error initializing database tables:', err);

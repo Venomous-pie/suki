@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { ArrowLeft, Link as LinkIcon, Building2, Phone } from 'lucide-react-native';
+import { ArrowLeft, Link as LinkIcon, Building2, Phone, CheckSquare, Square } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { Colors } from '@/constants/theme';
@@ -8,14 +8,26 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function SupplierJoinScreen() {
   const router = useRouter();
-  const loginSupplier = useAuthStore((state) => state.loginSupplier);
+  const { loginSupplier, savedPhone, loadSavedPhone, savePhone, clearSavedPhone } = useAuthStore();
   const theme = useColorScheme() ?? 'light';
   const colors = Colors[theme];
   
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('Joining...');
+
+  useEffect(() => {
+    loadSavedPhone().then(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (savedPhone) {
+      setPhone(savedPhone);
+      setRememberMe(true);
+    }
+  }, [savedPhone]);
 
   const handleJoin = async () => {
     if (!name.trim() || !phone.trim()) return;
@@ -24,7 +36,7 @@ export default function SupplierJoinScreen() {
     setLoadingText('Joining...');
     
     const coldBootWarning = setTimeout(() => {
-      setLoadingText('Waking up server...');
+      setLoadingText('Waking up...');
     }, 3000);
 
     const longerBootWarning = setTimeout(() => {
@@ -32,6 +44,11 @@ export default function SupplierJoinScreen() {
     }, 10000);
 
     try {
+      if (rememberMe) {
+        await savePhone(phone.trim());
+      } else {
+        await clearSavedPhone();
+      }
       await loginSupplier(name, phone);
     } catch (e) {
       // Handle error if needed
@@ -91,6 +108,19 @@ export default function SupplierJoinScreen() {
                 onChangeText={setPhone}
               />
             </View>
+
+            {/* Remember Me */}
+            <TouchableOpacity
+              style={styles.rememberRow}
+              onPress={() => setRememberMe(!rememberMe)}
+              activeOpacity={0.7}
+            >
+              {rememberMe
+                ? <CheckSquare size={20} color={colors.primary} />
+                : <Square size={20} color={colors.icon} />
+              }
+              <Text style={[styles.rememberText, { color: colors.icon }]}>Remember my phone number</Text>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity 
@@ -176,6 +206,16 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     height: '100%',
+  },
+  rememberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 4,
+    paddingVertical: 4,
+  },
+  rememberText: {
+    fontSize: 14,
   },
   primaryButton: {
     width: '100%',

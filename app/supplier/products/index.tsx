@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, RefreshControl, Modal } from 'react-native';
 import { Stack, router, useNavigation, useFocusEffect } from 'expo-router';
 import { Search, Image as ImageIcon, Filter, Edit2, X, Plus, Minus, Upload, Truck, Logs, PackageSearch } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import ProductImportWizard from '@/components/ProductImportWizard';
+import { useAuthStore } from '@/store/authStore';
+import { useProductStore } from '@/store/productStore';
 
-const CATEGORIES = ['All', 'Rice & Grains', 'Condiments', 'Canned Goods', 'Beverages'];
+
 
 // Empty initial state instead of mock data
 const INITIAL_PRODUCTS: any[] = [];
@@ -13,14 +16,29 @@ const INITIAL_PRODUCTS: any[] = [];
 export default function ProductsScreen() {
   const theme = useColorScheme();
   const colors = Colors[theme];
-  
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const user = useAuthStore((s) => s.user);
+  const { products, loadProducts, saveProducts, mergeAndSave } = useProductStore();
+
   const [activeCategory, setActiveCategory] = useState('All');
+
+  // Load user-specific products on mount
+  useEffect(() => {
+    if (user?.id) {
+      loadProducts(user.id);
+    }
+  }, [user?.id]);
+
+  // Derive categories dynamically from imported products
+  const CATEGORIES = useMemo(() => {
+    const unique = [...new Set(products.map(p => p.category).filter(Boolean))];
+    return ['All', ...unique.sort()];
+  }, [products]);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [isWizardVisible, setIsWizardVisible] = useState(false);
   
   // Quick Edit Modal State
-  const [quickEditProduct, setQuickEditProduct] = useState<typeof INITIAL_PRODUCTS[0] | null>(null);
+  const [quickEditProduct, setQuickEditProduct] = useState<any | null>(null);
   const [quickEditStock, setQuickEditStock] = useState(0);
 
   const navigation = useNavigation();
@@ -37,7 +55,10 @@ export default function ProductsScreen() {
           </View>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, backgroundColor: colors.background, padding: 8, borderRadius: 8 }}>
+          <TouchableOpacity 
+            style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16, backgroundColor: colors.background, padding: 8, borderRadius: 8 }}
+            onPress={() => setIsWizardVisible(true)}
+          >
             <Upload size={20} color={colors.primary} style={{ marginRight: 8 }} />
             <Text style={{ color: colors.primary, fontWeight: '600' }}>IMPORT</Text>
           </TouchableOpacity>
@@ -52,8 +73,11 @@ export default function ProductsScreen() {
   }, []);
 
   const handleQuickEditSave = () => {
-    if (quickEditProduct) {
-      setProducts(products.map(p => p.id === quickEditProduct.id ? { ...p, stock: quickEditStock, lastUpdated: 'Updated just now' } : p));
+    if (quickEditProduct && user?.id) {
+      const updated = products.map(p =>
+        p.id === quickEditProduct.id ? { ...p, stock: quickEditStock, lastUpdated: 'Updated just now' } : p
+      );
+      saveProducts(user.id, updated);
     }
     setQuickEditProduct(null);
   };
@@ -86,7 +110,15 @@ export default function ProductsScreen() {
         onPress={() => router.push(`/supplier/products/${item.id}`)}
       >
         <Text style={[styles.productName, { color: colors.text }]}>{item.name}</Text>
-        <Text style={[styles.productMeta, { color: colors.icon }]}>{item.category} • {item.unit}</Text>
+        <Text style={[styles.productMeta, { color: colors.icon }]}>
+          {item.brand ? `${item.brand} • ` : ''}
+          {item.category} • {item.unit}
+        </Text>
+        {item.sku && (
+          <Text style={[styles.productMeta, { color: colors.icon, fontSize: 11, marginTop: 2 }]}>
+            SKU: {item.sku}
+          </Text>
+        )}
         <View style={styles.priceRow}>
           <Text style={[styles.productPrice, { color: colors.primary }]}>{item.price}</Text>
           <Text style={[styles.lastUpdated, { color: colors.icon }]}>{item.lastUpdated}</Text>
@@ -164,9 +196,12 @@ export default function ProductsScreen() {
               {searchQuery ? "We couldn't find any products matching your search." : "Start building your catalog by importing your existing product list."}
             </Text>
             {!searchQuery && (
-              <TouchableOpacity style={[styles.emptyButton, { backgroundColor: colors.primary }]}>
+              <TouchableOpacity 
+                style={[styles.emptyButton, { backgroundColor: colors.primary }]}
+                onPress={() => setIsWizardVisible(true)}
+              >
                 <Upload size={20} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={styles.emptyButtonText}>Import CSV</Text>
+                <Text style={styles.emptyButtonText}>Import File</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -214,6 +249,17 @@ export default function ProductsScreen() {
           </View>
         </View>
       </Modal>
+
+      <ProductImportWizard 
+        visible={isWizardVisible} 
+        onClose={() => setIsWizardVisible(false)} 
+        onImportSuccess={async (newProducts) => {
+          if (user?.id) {
+            return await mergeAndSave(user.id, newProducts);
+          }
+          return { added: 0, updated: 0 };
+        }} 
+      />
     </View>
   );
 }
