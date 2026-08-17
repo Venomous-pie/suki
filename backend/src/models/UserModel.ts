@@ -16,6 +16,7 @@ const initDB = async () => {
         role VARCHAR(50) NOT NULL,
         phone VARCHAR(20) UNIQUE,
         name VARCHAR(100),
+        fcm_token VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -32,6 +33,7 @@ export interface User {
   role: 'supplier' | 'store_owner';
   phone?: string;
   name?: string;
+  fcm_token?: string;
 }
 
 export class UserModel {
@@ -40,11 +42,20 @@ export class UserModel {
     return result.rows[0] as User | undefined;
   }
 
+  static async findById(id: number): Promise<User | undefined> {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    return result.rows[0] as User | undefined;
+  }
+
   static async create(user: User): Promise<User> {
     const result = await pool.query(
-      'INSERT INTO users (role, phone, name) VALUES ($1, $2, $3) RETURNING *',
-      [user.role, user.phone, user.name]
+      'INSERT INTO users (role, phone, name, fcm_token) VALUES ($1, $2, $3, $4) RETURNING *',
+      [user.role, user.phone, user.name, user.fcm_token]
     );
     return result.rows[0] as User;
+  }
+
+  static async updateFcmToken(userId: number, token: string): Promise<void> {
+    await pool.query('UPDATE users SET fcm_token = $1 WHERE id = $2', [token, userId]);
   }
 }

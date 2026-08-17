@@ -25,7 +25,10 @@ export default function SupplierDashboardScreen() {
         options={{
           headerTitle: 'Dashboard',
           headerRight: () => (
-            <TouchableOpacity style={styles.headerRight}>
+            <TouchableOpacity 
+              style={styles.headerRight}
+              onPress={() => router.push('/supplier/notifications')}
+            >
               <Bell size={24} color="#fff" />
               <View style={styles.notificationBadge} />
             </TouchableOpacity>

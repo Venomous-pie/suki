@@ -19,11 +19,11 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const theme = useColorScheme();
   const colors = Colors[theme];
-  const [refreshing, React_useState] = React.useState(false); // Using React.useState directly since we didn't import it at top
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
-    React_useState(true);
-    setTimeout(() => React_useState(false), 1000);
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
   }, []);
 
   const [price, setPrice] = useState(PRODUCT_DETAILS.price);
@@ -54,7 +54,7 @@ export default function ProductDetailScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
     >
 
-      <View style={[styles.imageContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={[styles.imageContainer, { backgroundColor: colors.surface, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.border }]}>
         <ImageIcon size={64} color={colors.icon} />
         <TouchableOpacity 
           style={styles.changeImageBtn}
@@ -64,10 +64,10 @@ export default function ProductDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.formSection, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Product Information</Text>
+      <Text style={[styles.sectionTitle, { color: colors.icon }]}>Product Information</Text>
+      <View style={[styles.formSection, { backgroundColor: colors.surface, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.border }]}>
         
-        <View style={styles.inputGroup}>
+        <View style={[styles.inputGroup, { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}>
           <Text style={[styles.label, { color: colors.icon }]}>Product Name</Text>
           <TextInput 
             style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
@@ -75,7 +75,7 @@ export default function ProductDetailScreen() {
           />
         </View>
 
-        <View style={styles.inputGroup}>
+        <View style={[styles.inputGroup, { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}>
           <Text style={[styles.label, { color: colors.icon }]}>Unit / Packaging</Text>
           <TextInput 
             style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
@@ -94,11 +94,11 @@ export default function ProductDetailScreen() {
         </View>
       </View>
 
-      <View style={[styles.formSection, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Pricing & Inventory</Text>
+      <Text style={[styles.sectionTitle, { color: colors.icon }]}>Pricing & Inventory</Text>
+      <View style={[styles.formSection, { backgroundColor: colors.surface, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.border }]}>
         
-        <View style={styles.rowInputs}>
-          <View style={[styles.inputGroup, { flex: 1, marginRight: 12 }]}>
+        <View style={[styles.rowInputs, { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, paddingBottom: 16 }]}>
+          <View style={[styles.inputGroup, { flex: 1, marginRight: 12, marginBottom: 0 }]}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
               <Text style={[styles.label, { color: colors.icon, marginBottom: 0 }]}>Price (₱)</Text>
               <Text style={{ fontSize: 10, color: colors.icon }}>(Last changed 1w ago)</Text>
@@ -111,7 +111,7 @@ export default function ProductDetailScreen() {
             />
           </View>
 
-          <View style={[styles.inputGroup, { flex: 1 }]}>
+          <View style={[styles.inputGroup, { flex: 1, marginBottom: 0 }]}>
             <Text style={[styles.label, { color: colors.icon }]}>Stock Qty</Text>
             <TextInput 
               style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
@@ -158,39 +158,37 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    paddingVertical: 24,
   },
   imageContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   changeImageBtn: {
     marginTop: 16,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6', // can theme later
+    backgroundColor: '#F3F4F6',
   },
   changeImageText: {
     fontWeight: '600',
   },
   formSection: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 16,
+    paddingHorizontal: 16,
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 16,
+    fontSize: 13,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    marginBottom: 8,
+    paddingHorizontal: 16,
   },
   inputGroup: {
-    marginBottom: 16,
+    paddingVertical: 12,
   },
   label: {
     fontSize: 14,
@@ -232,6 +230,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginTop: 8,
+    marginHorizontal: 16,
   },
   deleteBtn: {
     flex: 1,

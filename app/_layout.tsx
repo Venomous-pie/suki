@@ -2,11 +2,13 @@ import { Redirect, Slot, useSegments } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  usePushNotifications();
 
   return (
     <ThemeProvider value={DefaultTheme}>

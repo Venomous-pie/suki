@@ -29,13 +29,6 @@ export default function SupplierLayout() {
               <Truck size={20} color={colors.primary} />
             </View>
           </View>
-        ),
-        headerRight: () => (
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 16 }}>
-            <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 8 }}>
-              <Logs size={24} color={colors.surface} />
-            </View>
-          </View>
         )
       }}
     >
@@ -82,6 +75,15 @@ export default function SupplierLayout() {
           title: 'Settings',
           tabBarIcon: ({ color }) => <Settings size={24} color={color} style={{ marginBottom: -3 }} />,
           headerTitle: 'Settings',
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          href: null,
+          title: 'Notifications',
+          headerShown: true,
+          headerTitle: 'Notifications'
         }}
       />
     </Tabs>

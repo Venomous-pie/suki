@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "77519691834",
+    "project_id": "suki-c7423",
+    "storage_bucket": "suki-c7423.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77519691834:android:91bfac74ded44708ea1503",
+        "android_client_info": {
+          "package_name": "com.suki.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJhPM2lb7mgsTsEQUn_oJC6x2OV40u-Wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

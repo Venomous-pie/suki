@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, RefreshControl, Modal } from 'react-native';
 import { Stack, router, useNavigation, useFocusEffect } from 'expo-router';
-import { Search, Image as ImageIcon, Filter, Edit2, X, Plus, Minus, Upload, Truck, Logs } from 'lucide-react-native';
+import { Search, Image as ImageIcon, Filter, Edit2, X, Plus, Minus, Upload, Truck, Logs, PackageSearch } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const CATEGORIES = ['All', 'Rice & Grains', 'Condiments', 'Canned Goods', 'Beverages'];
 
-// Initial Mock Data with Categories and lastUpdated
-const INITIAL_PRODUCTS = [
-  { id: '1', name: 'Jasmine Rice', category: 'Rice & Grains', unit: '25kg sack', price: '₱1,250', stock: 15, isActive: true, lastUpdated: 'Updated 2h ago' },
-  { id: '2', name: 'Brown Sugar', category: 'Condiments', unit: '1kg pack', price: '₱65', stock: 4, isActive: true, lowStock: true, lastUpdated: 'Updated today' },
-  { id: '3', name: 'Cooking Oil', category: 'Condiments', unit: '1L bottle', price: '₱110', stock: 0, isActive: false, lastUpdated: 'Updated 2d ago' },
-  { id: '4', name: 'Evaporated Milk', category: 'Canned Goods', unit: '370ml can', price: '₱35', stock: 120, isActive: true, lastUpdated: 'Updated 1w ago' },
-];
+// Empty initial state instead of mock data
+const INITIAL_PRODUCTS: any[] = [];
 
 export default function ProductsScreen() {
   const theme = useColorScheme();
@@ -157,8 +152,25 @@ export default function ProductsScreen() {
         data={filteredProducts}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, filteredProducts.length === 0 && { flex: 1 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <View style={[styles.emptyIconWrapper, { backgroundColor: colors.primary + '10' }]}>
+              <PackageSearch size={48} color={colors.primary} />
+            </View>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>No products yet</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.icon }]}>
+              {searchQuery ? "We couldn't find any products matching your search." : "Start building your catalog by importing your existing product list."}
+            </Text>
+            {!searchQuery && (
+              <TouchableOpacity style={[styles.emptyButton, { backgroundColor: colors.primary }]}>
+                <Upload size={20} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={styles.emptyButtonText}>Import CSV</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        }
       />
 
       {/* Quick Edit Modal */}
@@ -386,6 +398,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveBtnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    marginTop: 40,
+  },
+  emptyIconWrapper: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  emptyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+  },
+  emptyButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',

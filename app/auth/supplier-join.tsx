@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
-import { ArrowLeft, Link as LinkIcon } from 'lucide-react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { ArrowLeft, Link as LinkIcon, Building2, Phone } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { Colors } from '@/constants/theme';
@@ -11,45 +11,109 @@ export default function SupplierJoinScreen() {
   const loginSupplier = useAuthStore((state) => state.loginSupplier);
   const theme = useColorScheme() ?? 'light';
   const colors = Colors[theme];
+  
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('Joining...');
 
   const handleJoin = async () => {
+    if (!name.trim() || !phone.trim()) return;
+
     setIsLoading(true);
-    await loginSupplier();
-    setIsLoading(false);
+    setLoadingText('Joining...');
+    
+    const coldBootWarning = setTimeout(() => {
+      setLoadingText('Waking up server...');
+    }, 3000);
+
+    const longerBootWarning = setTimeout(() => {
+      setLoadingText('Almost there...');
+    }, 10000);
+
+    try {
+      await loginSupplier(name, phone);
+    } catch (e) {
+      // Handle error if needed
+    } finally {
+      clearTimeout(coldBootWarning);
+      clearTimeout(longerBootWarning);
+      setIsLoading(false);
+    }
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.content}>
-        <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>
-          <LinkIcon size={32} color={colors.primary} />
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => router.back()} 
+            style={styles.backButton}
+            disabled={isLoading}
+          >
+            <ArrowLeft size={24} color={isLoading ? colors.icon : colors.text} />
+          </TouchableOpacity>
         </View>
 
-        <Text style={[styles.title, { color: colors.text }]}>Join Our Supply Chain</Text>
-        <Text style={[styles.subtitle, { color: colors.icon }]}>
-          Become a trusted supplier for SUKI and manage your distribution network seamlessly.
-        </Text>
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>
+            <LinkIcon size={32} color={colors.primary} />
+          </View>
 
-        <TouchableOpacity 
-          style={[styles.primaryButton, { backgroundColor: colors.primary }, isLoading && { opacity: 0.8 }]}
-          onPress={handleJoin}
-          activeOpacity={0.8}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.primaryButtonText}>Join as Supplier</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+          <Text style={[styles.title, { color: colors.text }]}>Join Our Supply Chain</Text>
+          <Text style={[styles.subtitle, { color: colors.icon }]}>
+            Become a trusted supplier for SUKI and manage your distribution network seamlessly.
+          </Text>
+
+          <View style={styles.form}>
+            <View style={[styles.inputContainer, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+              <Building2 size={20} color={colors.icon} style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholder="Business Name"
+                placeholderTextColor={colors.icon}
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+
+            <View style={[styles.inputContainer, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+              <Phone size={20} color={colors.icon} style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholder="Phone Number"
+                placeholderTextColor={colors.icon}
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+              />
+            </View>
+          </View>
+
+          <TouchableOpacity 
+            style={[
+              styles.primaryButton, 
+              { backgroundColor: colors.primary }, 
+              (isLoading || !name.trim() || !phone.trim()) && { opacity: 0.8 }
+            ]}
+            onPress={handleJoin}
+            activeOpacity={0.8}
+            disabled={isLoading || !name.trim() || !phone.trim()}
+          >
+            {isLoading ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <ActivityIndicator color="#fff" />
+                <Text style={styles.primaryButtonText}>{loadingText}</Text>
+              </View>
+            ) : (
+              <Text style={styles.primaryButtonText}>Join as Supplier</Text>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -66,10 +130,10 @@ const styles = StyleSheet.create({
     width: 40,
   },
   content: {
-    flex: 1,
     padding: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    flexGrow: 1,
   },
   iconContainer: {
     width: 64,
@@ -92,9 +156,30 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     paddingHorizontal: 16,
   },
+  form: {
+    width: '100%',
+    marginBottom: 24,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    height: 52,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    height: '100%',
+  },
   primaryButton: {
     width: '100%',
-    padding: 14,
+    padding: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
