@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ScrollView, RefreshControl, Modal } from 'react-native';
-import { Stack, router, useNavigation, useFocusEffect } from 'expo-router';
+import { Stack, router, useNavigation, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Search, Image as ImageIcon, Filter, Edit2, X, Plus, Minus, Upload, Truck, Logs, PackageSearch } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -19,7 +19,15 @@ export default function ProductsScreen() {
   const user = useAuthStore((s) => s.user);
   const { products, loadProducts, saveProducts, mergeAndSave } = useProductStore();
 
+  const { filter } = useLocalSearchParams<{ filter?: string }>();
+
   const [activeCategory, setActiveCategory] = useState('All');
+
+  useEffect(() => {
+    if (filter === 'alerts') {
+      setActiveCategory('Alerts');
+    }
+  }, [filter]);
 
   // Load user-specific products on mount
   useEffect(() => {
@@ -31,7 +39,7 @@ export default function ProductsScreen() {
   // Derive categories dynamically from imported products
   const CATEGORIES = useMemo(() => {
     const unique = [...new Set(products.map(p => p.category).filter(Boolean))];
-    return ['All', ...unique.sort()];
+    return ['All', 'Alerts', ...unique.sort()];
   }, [products]);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -83,64 +91,86 @@ export default function ProductsScreen() {
   };
 
   const filteredProducts = products.filter(p => {
-    if (activeCategory !== 'All' && p.category !== activeCategory) return false;
+    if (activeCategory === 'Alerts') {
+      if (typeof p.stock !== 'number' || p.stock > 5) return false;
+    } else {
+      if (activeCategory !== 'All' && p.category !== activeCategory) return false;
+    }
+    
     if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
-  const renderItem = ({ item }: { item: typeof INITIAL_PRODUCTS[0] }) => (
-    <View style={[styles.listItem, { borderBottomColor: colors.border }]}>
-      <TouchableOpacity 
-        style={styles.imageBtn}
-        onPress={() => {
-          setQuickEditProduct(item);
-          setQuickEditStock(item.stock);
-        }}
-      >
-        <View style={[styles.productImage, { backgroundColor: '#F3F4F6' }]}>
-          <ImageIcon size={20} color="#9CA3AF" />
-          <View style={[styles.quickEditBadge, { backgroundColor: colors.primary }]}>
-            <Edit2 size={10} color="#fff" />
-          </View>
-        </View>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.productInfo}
-        onPress={() => router.push(`/supplier/products/${item.id}`)}
-      >
-        <Text style={[styles.productName, { color: colors.text }]}>{item.name}</Text>
-        <Text style={[styles.productMeta, { color: colors.icon }]}>
-          {item.brand ? `${item.brand} • ` : ''}
-          {item.category} • {item.unit}
-        </Text>
-        {item.sku && (
-          <Text style={[styles.productMeta, { color: colors.icon, fontSize: 11, marginTop: 2 }]}>
-            SKU: {item.sku}
-          </Text>
-        )}
-        <View style={styles.priceRow}>
-          <Text style={[styles.productPrice, { color: colors.primary }]}>{item.price}</Text>
-          <Text style={[styles.lastUpdated, { color: colors.icon }]}>{item.lastUpdated}</Text>
-        </View>
-      </TouchableOpacity>
+  const renderItem = ({ item }: { item: any }) => {
+    const isOutOfStock = item.stock === 0;
+    const isLowStock = item.stock > 0 && item.stock <= 5;
 
-      <View style={styles.stockColumn}>
-        <Text style={[
-          styles.stockNum,
-          item.stock === 0 ? { color: '#EF4444' } : item.lowStock ? { color: '#F59E0B' } : { color: '#10B981' }
-        ]}>
-          {item.stock}
-        </Text>
-        <Text style={[styles.stockLabel, { color: colors.icon }]}>in stock</Text>
-        {!item.isActive && (
-          <View style={[styles.inactiveBadge, { backgroundColor: colors.background, borderColor: colors.border }]}>
-            <Text style={styles.inactiveText}>Hidden</Text>
+    return (
+      <View style={[styles.listItem, { borderBottomColor: colors.border }]}>
+        <TouchableOpacity 
+          style={styles.imageBtn}
+          onPress={() => {
+            setQuickEditProduct(item);
+            setQuickEditStock(item.stock);
+          }}
+        >
+          <View style={[styles.productImage, { backgroundColor: '#F3F4F6' }]}>
+            <ImageIcon size={20} color="#9CA3AF" />
+            <View style={[styles.quickEditBadge, { backgroundColor: colors.primary }]}>
+              <Edit2 size={10} color="#fff" />
+            </View>
           </View>
-        )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.productInfo}
+          onPress={() => router.push(`/supplier/products/${item.id}`)}
+        >
+          <Text style={[styles.productName, { color: colors.text }]}>{item.name}</Text>
+          <Text style={[styles.productMeta, { color: colors.icon }]}>
+            {item.brand ? `${item.brand} • ` : ''}
+            {item.category} • {item.unit}
+          </Text>
+          {item.sku && (
+            <Text style={[styles.productMeta, { color: colors.icon, fontSize: 11, marginTop: 2 }]}>
+              SKU: {item.sku}
+            </Text>
+          )}
+          <View style={styles.priceRow}>
+            <Text style={[styles.productPrice, { color: colors.primary }]}>{item.price}</Text>
+            <Text style={[styles.lastUpdated, { color: colors.icon }]}>{item.lastUpdated}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.stockColumn}>
+          <Text style={[styles.stockNum, { color: colors.text }]}>
+            {item.stock}
+          </Text>
+          <Text style={[styles.stockLabel, { color: colors.icon }]}>in stock</Text>
+          
+          {(isOutOfStock || isLowStock) && (
+            <View style={[
+              styles.indicatorBadge,
+              isOutOfStock ? { backgroundColor: '#FEF2F2', borderColor: '#FECACA' } : { backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }
+            ]}>
+              <Text style={[
+                styles.indicatorText,
+                isOutOfStock ? { color: '#EF4444' } : { color: '#D97706' }
+              ]}>
+                {isOutOfStock ? 'OOS' : 'LOW'}
+              </Text>
+            </View>
+          )}
+
+          {!item.isActive && (
+            <View style={[styles.inactiveBadge, { backgroundColor: colors.background, borderColor: colors.border }]}>
+              <Text style={styles.inactiveText}>Hidden</Text>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -367,7 +397,7 @@ const styles = StyleSheet.create({
   },
   stockColumn: {
     alignItems: 'flex-end',
-    minWidth: 60,
+    justifyContent: 'center',
   },
   stockNum: {
     fontSize: 18,
@@ -375,7 +405,17 @@ const styles = StyleSheet.create({
   },
   stockLabel: {
     fontSize: 11,
-    marginTop: 2,
+  },
+  indicatorBadge: {
+    marginTop: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+  },
+  indicatorText: {
+    fontSize: 9,
+    fontWeight: '700',
   },
   inactiveBadge: {
     marginTop: 4,
